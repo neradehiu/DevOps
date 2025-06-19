@@ -3,30 +3,37 @@ package com.atp.fwfe.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "accounts")
 public class Account {
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Setter
     @Column(nullable = false)
     private String password;
 
+    @Setter
     @Email(message = "Email không đúng định dạng")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@gmail\\.com$", message = "Vui lòng dùng địa chỉ @gmail.com")
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String role;
 
@@ -50,26 +57,5 @@ public class Account {
         this.email = email;
         this.role = (role != null) ? role : "ROLE_USER";
     }
-
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
-
-    public String getUsername() {return username;}
-    public void setUsername(String username) {this.username = username;}
-
-    public String getPassword() {return password;}
-    public void setPassword(String password) {this.password = password;}
-
-    public String getEmail() {return email;}
-    public void setEmail(String email) {this.email = email;}
-
-    public String getRole() {return role;}
-    public void setRole(String role) {this.role = role;}
-
-    public LocalDateTime getCreatedAt() {return createdAt;}
-
-    public LocalDateTime getUpdatedAt() {return updatedAt;}
-
-    public String getUpdatedBy() {return updatedBy;}
 
 }

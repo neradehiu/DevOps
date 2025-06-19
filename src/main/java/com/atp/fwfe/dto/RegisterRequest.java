@@ -34,7 +34,7 @@ public class RegisterRequest {
 
     @AssertTrue(message = "Mật khẩu xác nhận không khớp")
     public boolean isPasswordConfirmed() {
-        if(password == null || confirmPassword ==null) return false;
+        if(password == null || confirmPassword == null) return false;
         return password.equals(confirmPassword);
     }
 
