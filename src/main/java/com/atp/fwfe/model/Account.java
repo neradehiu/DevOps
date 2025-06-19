@@ -3,6 +3,7 @@ package com.atp.fwfe.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -37,6 +38,7 @@ public class Account {
     @Column
     private LocalDateTime updatedAt;
 
+    @Setter
     @Column
     private String updatedBy;
 
@@ -69,6 +71,5 @@ public class Account {
     public LocalDateTime getUpdatedAt() {return updatedAt;}
 
     public String getUpdatedBy() {return updatedBy;}
-    public void setUpdatedBy(String updatedBy) {this.updatedBy = updatedBy;}
 
 }
