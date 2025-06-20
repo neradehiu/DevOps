@@ -38,3 +38,5 @@ out/
 
 application.properties
 application.yml
+
+src/main/java/com/atp/fwfe/admin01/PasswordGenerator.java
