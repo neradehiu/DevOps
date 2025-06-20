@@ -1,22 +1,40 @@
 package com.atp.fwfe.service;
 
 import com.atp.fwfe.dto.AdminCreateUserRequest;
+import com.atp.fwfe.dto.AuthRequest;
+import com.atp.fwfe.dto.AuthResponse;
 import com.atp.fwfe.dto.RegisterRequest;
 import com.atp.fwfe.model.Account;
 import com.atp.fwfe.repository.AccRepository;
+import com.atp.fwfe.security.JwtUtil;
+import com.atp.fwfe.security.TokenBlacklistService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @Service
 public class AuthService {
 
     private final AccRepository accRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public AuthService(AccRepository accRepository, PasswordEncoder passwordEncoder){
+
+    public AuthService(AccRepository accRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager, TokenBlacklistService tokenBlacklistService){
         this.accRepository = accRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.tokenBlacklistService = tokenBlacklistService;
+
     }
 
     public ResponseEntity<String> register(RegisterRequest request) {
@@ -60,7 +78,46 @@ public class AuthService {
         return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
     }
 
+    public ResponseEntity<AuthResponse> login(AuthRequest request){
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+
+            Account account = accRepository.findByUsername(request.getUsername()).get();
+            String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
+            return ResponseEntity.ok(new AuthResponse(token, "Đăng nhập thành công!"));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse(null, "Tên đăng nhập hoặc mật khẩu không đúng!"));
+        }
+    }
 
 
+    public ResponseEntity<String> logout(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        tokenBlacklistService.blacklistToken(token);
+        return ResponseEntity.ok("Bạn đã đăng xuất tài khoản!");
+    }
+
+    public ResponseEntity<String> validateToken(String token){
+        token = token.replace("Bearer ", "");
+        String username = jwtUtil.extractUsername(token);
+        String role = jwtUtil.extractRole(token);
+
+        if (username == null || role == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ!");
+        }
+        return ResponseEntity.ok("Token hợp lệ. Role: " + role);
+    }
 
 }
+
+
+
