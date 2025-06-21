@@ -1,15 +1,11 @@
 package com.atp.fwfe.controller;
 
-import com.atp.fwfe.dto.AuthRequest;
-import com.atp.fwfe.dto.AuthResponse;
+import com.atp.fwfe.dto.LoginRequest;
+import com.atp.fwfe.dto.LoginResponse;
 import com.atp.fwfe.dto.RegisterRequest;
-import com.atp.fwfe.model.Account;
-import com.atp.fwfe.repository.AccRepository;
 import com.atp.fwfe.service.AuthService;
 import jakarta.validation.Valid;
-import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request){
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request){
         return authService.login(request);
     }
 

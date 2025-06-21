@@ -1,5 +1,6 @@
-package com.atp.fwfe.security;
+package com.atp.fwfe.config;
 
+import com.atp.fwfe.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 
 import org.springframework.context.annotation.Configuration;

@@ -1,13 +1,12 @@
 package com.atp.fwfe.service;
 
-import com.atp.fwfe.dto.AdminCreateUserRequest;
-import com.atp.fwfe.dto.AuthRequest;
-import com.atp.fwfe.dto.AuthResponse;
+import com.atp.fwfe.dto.adrequest.AdminCreateUserRequest;
+import com.atp.fwfe.dto.LoginRequest;
+import com.atp.fwfe.dto.LoginResponse;
 import com.atp.fwfe.dto.RegisterRequest;
 import com.atp.fwfe.model.Account;
 import com.atp.fwfe.repository.AccRepository;
 import com.atp.fwfe.security.JwtUtil;
-import com.atp.fwfe.security.TokenBlacklistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,8 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @Service
 public class AuthService {
@@ -78,7 +75,7 @@ public class AuthService {
         return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
     }
 
-    public ResponseEntity<AuthResponse> login(AuthRequest request){
+    public ResponseEntity<LoginResponse> login(LoginRequest request){
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -89,10 +86,10 @@ public class AuthService {
 
             Account account = accRepository.findByUsername(request.getUsername()).get();
             String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
-            return ResponseEntity.ok(new AuthResponse(token, "Đăng nhập thành công!"));
+            return ResponseEntity.ok(new LoginResponse(token, "Đăng nhập thành công!"));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse(null, "Tên đăng nhập hoặc mật khẩu không đúng!"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse(null, "Tên đăng nhập hoặc mật khẩu không đúng!"));
         }
     }
 

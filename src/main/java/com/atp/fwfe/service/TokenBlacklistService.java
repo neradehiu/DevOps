@@ -1,4 +1,4 @@
-package com.atp.fwfe.security;
+package com.atp.fwfe.service;
 
 import org.springframework.stereotype.Service;
 

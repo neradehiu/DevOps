@@ -1,4 +1,4 @@
-package com.atp.fwfe.dto;
+package com.atp.fwfe.dto.adrequest;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
