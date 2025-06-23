@@ -6,10 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -26,6 +23,16 @@ public class AuthAdminController {
     @PostMapping("/create-user")
     public ResponseEntity<String> createUser(@Valid @RequestBody AdminCreateUserRequest request) {
         return authService.createUser(request);
+    }
+
+    @PutMapping("/users/{id}/lock")
+    public ResponseEntity<?> lockUser(@PathVariable Long id) {
+        return authService.lockUser(id);
+    }
+
+    @PutMapping("/users/{id}/unlock")
+    public ResponseEntity<?> unlockUser(@PathVatiable Long id) {
+        return authService.unlockUser(id);
     }
 
 

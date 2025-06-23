@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
 
@@ -34,6 +36,7 @@ public class AuthService {
 
     }
 
+//AUTH chung chung
     public ResponseEntity<String> register(RegisterRequest request) {
         if (accRepository.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Username đã tồn tại!");
@@ -53,26 +56,6 @@ public class AuthService {
         accRepository.save(account);
         return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
 
-    }
-
-
-    public ResponseEntity<String> createUser(AdminCreateUserRequest request) {
-        if (accRepository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Username đã tồn tại!");
-        }
-
-        if (accRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email đã được sử dụng!");
-        }
-
-        Account account = new Account();
-        account.setUsername(request.getUsername());
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
-        account.setEmail(request.getEmail());
-        account.setRole(request.getRole());
-
-        accRepository.save(account);
-        return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
     }
 
     public ResponseEntity<LoginResponse> login(LoginRequest request){
@@ -113,6 +96,63 @@ public class AuthService {
         }
         return ResponseEntity.ok("Token hợp lệ. Role: " + role);
     }
+
+//ADMIN
+    public ResponseEntity<String> createUser(AdminCreateUserRequest request) {
+        if (accRepository.findByUsername(request.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body("Username đã tồn tại!");
+        }
+
+        if (accRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email đã được sử dụng!");
+        }
+
+        Account account = new Account();
+        account.setUsername(request.getUsername());
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setEmail(request.getEmail());
+        account.setRole(request.getRole());
+
+        accRepository.save(account);
+        return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
+    }
+
+    public ResponseEntity<?> lockUser(Long id) {
+        Optional<Account> optional = accRepository.findById(id);
+        if (optional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng.");
+        }
+
+        Account account = optional.get();
+        if(account.isLocked()) {
+            return ResponseEntity.badRequest().body("Tài khoản đã bị khóa!");
+        }
+
+        account.setLocked(true);
+        accRepository.save(account);
+
+        return ResponseEntity.ok("Đã khóa tài khoản thành công!");
+    }
+
+    public ResponseEntity<?> unlockUser(Long id){
+        Optional<Account> optional = accRepository.findById(id);
+
+        if(optional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy tài khoản.");
+        }
+
+        Account account = optional.get();
+        if(!account.isLocked()){
+            return ResponseEntity.badRequest().body("Tài khoản đang mở!");
+        }
+
+        account.setLocked(false);
+        accRepository.save(account);
+
+        return ResponseEntity.ok("Đã mở khóa tài khoản thành công!");
+    }
+
+
 
 }
 

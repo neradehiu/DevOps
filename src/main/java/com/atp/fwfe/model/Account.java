@@ -49,6 +49,11 @@ public class Account {
     @Column
     private String updatedBy;
 
+    @Setter
+    @Column(nullable = false)
+    private boolean isLocked = false;
+
+
 
     public Account() {}
     public Account(String username, String password, String email, String role) {
