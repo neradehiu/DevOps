@@ -1,4 +1,4 @@
-package com.atp.fwfe.dto;
+package com.atp.fwfe.dto.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,9 +1,9 @@
 package com.atp.fwfe.service;
 
 import com.atp.fwfe.dto.adrequest.AdminCreateUserRequest;
-import com.atp.fwfe.dto.LoginRequest;
-import com.atp.fwfe.dto.LoginResponse;
-import com.atp.fwfe.dto.RegisterRequest;
+import com.atp.fwfe.dto.login.LoginRequest;
+import com.atp.fwfe.dto.login.LoginResponse;
+import com.atp.fwfe.dto.register.RegisterRequest;
 import com.atp.fwfe.model.Account;
 import com.atp.fwfe.repository.AccRepository;
 import com.atp.fwfe.security.JwtUtil;

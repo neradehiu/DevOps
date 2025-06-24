@@ -1,4 +1,4 @@
-package com.atp.fwfe.controller;
+package com.atp.fwfe.controller.account;
 
 import com.atp.fwfe.dto.adrequest.AdminCreateUserRequest;
 import com.atp.fwfe.service.AuthService;
@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AuthAdminController {
+public class AdminController {
 
   private final AuthService authService;
 
   @Autowired
-  public AuthAdminController(AuthService authService) {
+  public AdminController(AuthService authService) {
       this.authService = authService;
   }
 

@@ -1,4 +1,4 @@
-package com.atp.fwfe.dto;
+package com.atp.fwfe.dto.register;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
