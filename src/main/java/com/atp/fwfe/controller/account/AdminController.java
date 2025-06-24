@@ -31,7 +31,7 @@ public class AdminController {
     }
 
     @PutMapping("/users/{id}/unlock")
-    public ResponseEntity<?> unlockUser(@PathVatiable Long id) {
+    public ResponseEntity<?> unlockUser(@PathVariable Long id) {
         return authService.unlockUser(id);
     }
 
