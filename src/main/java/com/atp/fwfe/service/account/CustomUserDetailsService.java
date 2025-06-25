@@ -1,4 +1,4 @@
-package com.atp.fwfe.service;
+package com.atp.fwfe.service.account;
 
 import com.atp.fwfe.model.Account;
 import com.atp.fwfe.repository.AccRepository;

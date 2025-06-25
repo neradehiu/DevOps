@@ -2,7 +2,7 @@ package com.atp.fwfe.security;
 
 import java.io.IOException;
 
-import com.atp.fwfe.service.TokenBlacklistService;
+import com.atp.fwfe.service.account.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

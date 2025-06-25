@@ -1,4 +1,4 @@
-package com.atp.fwfe.dto.passwordreset;
+package com.atp.fwfe.dto.account.passwordreset;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

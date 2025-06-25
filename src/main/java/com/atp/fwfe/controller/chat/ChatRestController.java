@@ -2,7 +2,7 @@ package com.atp.fwfe.controller.chat;
 
 import com.atp.fwfe.dto.chat.ChatMessageResponse;
 import com.atp.fwfe.model.Account;
-import com.atp.fwfe.service.ChatMessageService;
+import com.atp.fwfe.service.chat.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

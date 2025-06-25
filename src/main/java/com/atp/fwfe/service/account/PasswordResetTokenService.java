@@ -1,4 +1,4 @@
-package com.atp.fwfe.service;
+package com.atp.fwfe.service.account;
 
 import com.atp.fwfe.model.Account;
 import com.atp.fwfe.model.PasswordResetToken;
@@ -71,5 +71,5 @@ public class PasswordResetTokenService {
         return ResponseEntity.ok("Đã cập nhật mật khẩu mới!");
     }
 
-    
+
 }

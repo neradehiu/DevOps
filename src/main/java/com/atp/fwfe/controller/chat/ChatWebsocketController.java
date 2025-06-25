@@ -4,7 +4,7 @@ import com.atp.fwfe.dto.chat.ChatMessageRequest;
 import com.atp.fwfe.dto.chat.ChatMessageResponse;
 import com.atp.fwfe.model.Account;
 import com.atp.fwfe.model.ChatMessage;
-import com.atp.fwfe.service.ChatMessageService;
+import com.atp.fwfe.service.chat.ChatMessageService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;

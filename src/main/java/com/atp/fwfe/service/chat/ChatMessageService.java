@@ -1,6 +1,5 @@
-package com.atp.fwfe.service;
+package com.atp.fwfe.service.chat;
 
-import com.atp.fwfe.dto.chat.ChatMessageResponse;
 import com.atp.fwfe.model.Account;
 import com.atp.fwfe.model.ChatMessage;
 import com.atp.fwfe.repository.AccRepository;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.util.HashSet;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service

@@ -1,4 +1,4 @@
-package com.atp.fwfe.service;
+package com.atp.fwfe.service.account;
 
 import org.springframework.stereotype.Service;
 

@@ -1,9 +1,9 @@
 package com.atp.fwfe.controller.account;
 
-import com.atp.fwfe.dto.login.LoginRequest;
-import com.atp.fwfe.dto.login.LoginResponse;
-import com.atp.fwfe.dto.register.RegisterRequest;
-import com.atp.fwfe.service.AuthService;
+import com.atp.fwfe.dto.account.login.LoginRequest;
+import com.atp.fwfe.dto.account.login.LoginResponse;
+import com.atp.fwfe.dto.account.register.RegisterRequest;
+import com.atp.fwfe.service.account.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

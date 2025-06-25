@@ -1,7 +1,7 @@
 package com.atp.fwfe.controller.account;
 
-import com.atp.fwfe.dto.adrequest.AdminCreateUserRequest;
-import com.atp.fwfe.service.AuthService;
+import com.atp.fwfe.dto.account.adrequest.AdminCreateUserRequest;
+import com.atp.fwfe.service.account.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
