@@ -1,6 +1,6 @@
 package com.atp.fwfe.service.chat;
 
-import com.atp.fwfe.model.Account;
+import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.model.ChatMessage;
 import com.atp.fwfe.repository.AccRepository;
 import com.atp.fwfe.repository.ChatMessageRepository;

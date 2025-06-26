@@ -1,7 +1,7 @@
 package com.atp.fwfe.service.account;
 
-import com.atp.fwfe.model.Account;
-import com.atp.fwfe.model.PasswordResetToken;
+import com.atp.fwfe.model.account.Account;
+import com.atp.fwfe.model.account.PasswordResetToken;
 import com.atp.fwfe.repository.AccRepository;
 import com.atp.fwfe.repository.PasswordResetTokenRepository;
 import com.atp.fwfe.service.mailer.MailService;

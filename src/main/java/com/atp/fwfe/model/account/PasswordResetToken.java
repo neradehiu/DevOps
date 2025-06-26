@@ -1,4 +1,4 @@
-package com.atp.fwfe.model;
+package com.atp.fwfe.model.account;
 
 import jakarta.persistence.*;
 import lombok.Getter;

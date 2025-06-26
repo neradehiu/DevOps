@@ -1,16 +1,22 @@
-package com.atp.fwfe.model;
+package com.atp.fwfe.model.account;
 
+import com.atp.fwfe.model.work.Company;
+import com.atp.fwfe.model.work.WorkAcceptance;
+import com.atp.fwfe.model.work.WorkPosted;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter
+@Data
 @Entity
 @Table(name = "accounts")
 public class Account {
@@ -53,7 +59,17 @@ public class Account {
     @Column(nullable = false)
     private boolean isLocked = false;
 
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Company> company;
 
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<WorkPosted> workPosted;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<WorkAcceptance> acceptedWorks;
 
     public Account() {}
     public Account(String username, String password, String email, String role) {

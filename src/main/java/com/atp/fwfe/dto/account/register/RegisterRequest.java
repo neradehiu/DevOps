@@ -32,6 +32,13 @@ public class RegisterRequest {
     )
     private String email;
 
+    @NotBlank(message = "Vui lòng dùng tên thật của bạn!!")
+    private String name;
+
+    @NotNull
+    @NotBlank(message = "Vui lòng điền thông tin doanh nghiệp/ cửa hàng của bạn")
+    private CreateWorkDto work;
+
     @AssertTrue(message = "Mật khẩu xác nhận không khớp")
     public boolean isPasswordConfirmed() {
         if(password == null || confirmPassword == null) return false;

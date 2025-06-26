@@ -2,7 +2,7 @@ package com.atp.fwfe.controller.chat;
 
 import com.atp.fwfe.dto.chat.ChatMessageRequest;
 import com.atp.fwfe.dto.chat.ChatMessageResponse;
-import com.atp.fwfe.model.Account;
+import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.model.ChatMessage;
 import com.atp.fwfe.service.chat.ChatMessageService;
 import jakarta.validation.Valid;

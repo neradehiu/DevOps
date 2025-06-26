@@ -4,8 +4,10 @@ import com.atp.fwfe.dto.account.adrequest.AdminCreateUserRequest;
 import com.atp.fwfe.dto.account.login.LoginRequest;
 import com.atp.fwfe.dto.account.login.LoginResponse;
 import com.atp.fwfe.dto.account.register.RegisterRequest;
-import com.atp.fwfe.model.Account;
+import com.atp.fwfe.model.account.Account;
+import com.atp.fwfe.model.work.Report;
 import com.atp.fwfe.repository.AccRepository;
+import com.atp.fwfe.repository.ReportRepository;
 import com.atp.fwfe.security.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,15 +28,17 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final TokenBlacklistService tokenBlacklistService;
+    private final ReportRepository reportRepository;
 
 
-    public AuthService(AccRepository accRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager, TokenBlacklistService tokenBlacklistService){
+
+    public AuthService(AccRepository accRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager, TokenBlacklistService tokenBlacklistService, ReportRepository reportRepository){
         this.accRepository = accRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.tokenBlacklistService = tokenBlacklistService;
-
+        this.reportRepository = reportRepository;
     }
 
 //AUTH chung chung
@@ -152,6 +157,9 @@ public class AuthService {
         return ResponseEntity.ok("Đã mở khóa tài khoản thành công!");
     }
 
+    public List<Report> findByResolvedFalse(){
+        return reportRepository.findByResolvedFalse();
+    }
 
 
 }
