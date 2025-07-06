@@ -1,6 +1,6 @@
-package com.atp.fwfe.repository;
+package com.atp.fwfe.repository.chat;
 
-import com.atp.fwfe.model.ChatMessage;
+import com.atp.fwfe.model.chat.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

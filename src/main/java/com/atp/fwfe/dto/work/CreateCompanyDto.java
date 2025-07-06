@@ -1,17 +1,16 @@
-package com.atp.fwfe.dto.account.register;
+package com.atp.fwfe.dto.work;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class CreateWorkDto {
+public class CreateCompanyDto {
 
     @NotBlank(message = "Vui lòng điền tên cơ sở kinh doanh")
     private String name;
 
     @NotBlank(message = "Giới thiệu cơ bản về cơ sở kinh doanh của bạn")
-    private String description;
+    private String descriptionCompany;
 
     @NotBlank(message = "Loại hình kinh doanh của bạn là gì? (vd: tạp hóa, caffee, xưởng may,...")
     private String type;
@@ -21,8 +20,4 @@ public class CreateWorkDto {
 
     private Boolean isPublic;
 
-    @Min(1)
-    private Integer maxReceiver;
-
-    private Long createdBy;
 }

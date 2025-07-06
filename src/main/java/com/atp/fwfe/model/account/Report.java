@@ -1,6 +1,5 @@
-package com.atp.fwfe.model.work;
+package com.atp.fwfe.model.account;
 
-import com.atp.fwfe.model.account.Account;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.atp.fwfe.model;
+package com.atp.fwfe.model.chat;
 import com.atp.fwfe.model.account.Account;
 import jakarta.persistence.*;
 import lombok.Getter;

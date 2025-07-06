@@ -2,8 +2,8 @@ package com.atp.fwfe.service.account;
 
 import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.model.account.PasswordResetToken;
-import com.atp.fwfe.repository.AccRepository;
-import com.atp.fwfe.repository.PasswordResetTokenRepository;
+import com.atp.fwfe.repository.account.AccRepository;
+import com.atp.fwfe.repository.account.PasswordResetTokenRepository;
 import com.atp.fwfe.service.mailer.MailService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;

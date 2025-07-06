@@ -1,4 +1,4 @@
-package com.atp.fwfe.dto.account.adrequest;
+package com.atp.fwfe.dto.account.adminRequest;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class AdminUpdateUserRequest {
 
-    // username và password sẽ do người dùng tự đặt
+    // username sẽ do người dùng tự đặt, password sẽ do người dùng quên mật khẩu -> đặt lại
     private String email;
     private String role;
     private boolean locked;

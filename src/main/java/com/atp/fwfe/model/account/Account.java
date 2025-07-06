@@ -26,6 +26,10 @@ public class Account {
     private Long id;
 
     @Setter
+    @Column(nullable = false)
+    private String name;
+
+    @Setter
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -72,10 +76,11 @@ public class Account {
     private List<WorkAcceptance> acceptedWorks;
 
     public Account() {}
-    public Account(String username, String password, String email, String role) {
+    public Account(String username, String password, String email, String name, String role) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.name = name;
         this.role = (role != null) ? role : "ROLE_USER";
     }
 

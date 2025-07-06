@@ -3,6 +3,7 @@ package com.atp.fwfe.model.work;
 import com.atp.fwfe.model.account.Account;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +32,6 @@ public class Company {
 
     @Column(nullable = false)
     private String address;
-
 
 
     @ManyToOne

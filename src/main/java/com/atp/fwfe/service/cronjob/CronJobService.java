@@ -12,15 +12,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CronJobService {
 
-//    @Autowired
-//    private final NoticeNewWorkService noticeService;
-//
-//    @Autowired
-//    private final UserService userService;
-//
-//    @Autowired
-//    private final MailService mailService;
-//
-//
+
 
 }

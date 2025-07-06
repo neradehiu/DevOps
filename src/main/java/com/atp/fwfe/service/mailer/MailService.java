@@ -1,11 +1,13 @@
 package com.atp.fwfe.service.mailer;
 
+import com.atp.fwfe.model.work.WorkPosted;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,15 +44,15 @@ public class MailService {
     }
 
 
-    public void sendNewJobNotification(String email, List<NoticeNewWork> jobs) throws MessagingException{
+    public void sendNewJobNotification(String email, List<WorkPosted> jobs) throws MessagingException{
         String subject = "🆕 Việc làm mới dành cho bạn!";
         StringBuilder jobListHtml = new StringBuilder();
 
-        for (NoticeNewWork job : jobs){
+        for (WorkPosted job : jobs){
             jobListHtml.append("<li>")
                     .append("<strong>").append("Vị trí tuyển dụng: ").append(job.getPosition()).append("</strong>")
                     .append(" - Mức lương cơ bản: ").append(job.getSalary()).append("₫")
-                    .append(" Địa chỉ: ").append(job.getAddress())
+                    .append(" Địa chỉ: ").append(job.getCompany().getAddress())
                     .append("</li>");
         }
 

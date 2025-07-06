@@ -1,9 +1,9 @@
 package com.atp.fwfe.service.chat;
 
 import com.atp.fwfe.model.account.Account;
-import com.atp.fwfe.model.ChatMessage;
-import com.atp.fwfe.repository.AccRepository;
-import com.atp.fwfe.repository.ChatMessageRepository;
+import com.atp.fwfe.model.chat.ChatMessage;
+import com.atp.fwfe.repository.account.AccRepository;
+import com.atp.fwfe.repository.chat.ChatMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

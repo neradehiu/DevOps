@@ -1,5 +1,6 @@
 package com.atp.fwfe.dto.account.register;
 
+import com.atp.fwfe.dto.work.CreateCompanyDto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -37,7 +38,7 @@ public class RegisterRequest {
 
     @NotNull
     @NotBlank(message = "Vui lòng điền thông tin doanh nghiệp/ cửa hàng của bạn")
-    private CreateWorkDto work;
+    private CreateCompanyDto company;
 
     @AssertTrue(message = "Mật khẩu xác nhận không khớp")
     public boolean isPasswordConfirmed() {

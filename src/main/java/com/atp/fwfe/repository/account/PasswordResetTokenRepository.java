@@ -1,4 +1,4 @@
-package com.atp.fwfe.repository;
+package com.atp.fwfe.repository.account;
 
 import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.model.account.PasswordResetToken;

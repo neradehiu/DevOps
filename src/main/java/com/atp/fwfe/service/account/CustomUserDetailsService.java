@@ -1,7 +1,7 @@
 package com.atp.fwfe.service.account;
 
 import com.atp.fwfe.model.account.Account;
-import com.atp.fwfe.repository.AccRepository;
+import com.atp.fwfe.repository.account.AccRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

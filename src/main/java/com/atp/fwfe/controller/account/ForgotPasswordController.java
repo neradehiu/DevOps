@@ -3,6 +3,7 @@ package com.atp.fwfe.controller.account;
 import com.atp.fwfe.dto.account.passwordreset.ForgotPasswordRequest;
 import com.atp.fwfe.dto.account.passwordreset.ResetPasswordRequest;
 import com.atp.fwfe.service.account.PasswordResetTokenService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class ForgotPasswordController {
     private PasswordResetTokenService passwordResetTokenService;
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request){
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) throws MessagingException {
         return passwordResetTokenService.sendResetPasswordLink(request.getEmail());
     }
 

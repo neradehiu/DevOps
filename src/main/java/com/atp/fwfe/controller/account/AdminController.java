@@ -1,8 +1,10 @@
 package com.atp.fwfe.controller.account;
 
-import com.atp.fwfe.dto.account.adrequest.AdminCreateUserRequest;
-import com.atp.fwfe.model.work.Report;
-import com.atp.fwfe.service.account.AuthService;
+import com.atp.fwfe.dto.account.adminRequest.AdminCreateUserRequest;
+import com.atp.fwfe.dto.account.adminRequest.AdminUpdateUserRequest;
+import com.atp.fwfe.model.account.Account;
+import com.atp.fwfe.model.account.Report;
+import com.atp.fwfe.service.account.AccService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,32 +17,60 @@ import java.util.List;
 @RequestMapping("/api/admin")
 public class AdminController {
 
-  private final AuthService authService;
+  @Autowired
+  private final AccService accService;
 
   @Autowired
-  public AdminController(AuthService authService) {
-      this.authService = authService;
+  public AdminController(AccService accService) {
+      this.accService = accService;
   }
 
+  //ADMIN
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/create-user")
+    @PostMapping("/create-account")
     public ResponseEntity<String> createUser(@Valid @RequestBody AdminCreateUserRequest request) {
-        return authService.createUser(request);
+        return accService.createUser(request);
     }
 
-    @PutMapping("/users/{id}/lock")
+    @PutMapping("/lock/{id}")
     public ResponseEntity<?> lockUser(@PathVariable Long id) {
-        return authService.lockUser(id);
+        return accService.lockUser(id);
     }
 
-    @PutMapping("/users/{id}/unlock")
+    @PutMapping("/unlock/{id}")
     public ResponseEntity<?> unlockUser(@PathVariable Long id) {
-        return authService.unlockUser(id);
+        return accService.unlockUser(id);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateAdmin(@PathVariable Long id, @RequestBody AdminUpdateUserRequest request){
+      Account updated = accService.updateAdmin(id,request);
+      return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/reports/unresolved")
     public List<Report> getUnresolvedReports(){
-      return authService.findByResolvedFalse();
+      return accService.findByResolvedFalse();
     }
+
+    @GetMapping
+    public List<Account> getAll(){
+      return accService.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+    accService.delete(id);
+    }
+
+
+  // ADMIN và chủ tài khoản
+  @PreAuthorize("hasRole('ROLE_ADMIN') or #id == authentication.principal.id")
+    @GetMapping("/{id}")
+    public Account getOne(@PathVariable Long id){
+      return accService.findOne(id);
+    }
+
+
 
 }

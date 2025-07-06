@@ -1,6 +1,6 @@
-package com.atp.fwfe.repository;
+package com.atp.fwfe.repository.account;
 
-import com.atp.fwfe.model.work.Report;
+import com.atp.fwfe.model.account.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
