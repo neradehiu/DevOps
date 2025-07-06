@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "companies")
 @Data
@@ -38,5 +40,11 @@ public class Company {
     @JoinColumn(name = "created_by")
     @JsonBackReference
     private Account createdBy;
+
+    @OneToMany(mappedBy = "company")
+    private List<WorkPosted> workPostings;
+
+    @Column(nullable = false)
+    private Boolean isPublic = true;
 
 }
