@@ -19,7 +19,7 @@ public interface WorkPostedRepository extends JpaRepository<WorkPosted, Long> {
     @Query("SELECT w FROM WorkPosted w LEFT JOIN FETCH w.createdBy LEFT JOIN FETCH w.company LEFT JOIN FETCH w.acceptances a LEFT JOIN FETCH a.account WHERE w.id = :id")
     Optional<WorkPosted> findByIdWithRelations(@Param("id") Long id);
 
-    @Query("SELECT w FROM WorkPosted w JOIN w.acceptances a WHERE a.account.id = :userId")
-    List<WorkPosted> findByAcceptedById(@Param("userId") Long userId);
+    @Query("SELECT w FROM WorkPosted w JOIN w.acceptances a WHERE a.account.id = :accountId")
+    List<WorkPosted> findByAcceptedById(@Param("accountId") Long accountId);
 
 }

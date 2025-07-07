@@ -1,10 +1,14 @@
 package com.atp.fwfe.dto.work;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 @Data
 public class WorkPostedResponse {
 
@@ -15,7 +19,7 @@ public class WorkPostedResponse {
     private Integer maxReceiver;
     private int acceptedCount;
     private int maxAccepted;
-    private boolean isNotified;
+
     private LocalDateTime updatedAt;
 
     private Long companyId;
@@ -23,5 +27,15 @@ public class WorkPostedResponse {
 
     private Long createdById;
     private String createdByUsername;
+
+    private boolean isNotified;
+
+    public boolean isNotified() {
+        return isNotified;
+    }
+
+    public void setIsNotified(boolean isNotified) {
+        this.isNotified = isNotified;
+    }
 }
 
