@@ -14,8 +14,10 @@ import com.atp.fwfe.repository.account.AccRepository;
 import com.atp.fwfe.repository.account.ReportRepository;
 import com.atp.fwfe.security.JwtUtil;
 import com.atp.fwfe.service.mailer.MailService;
+import com.atp.fwfe.service.work.CompanyService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,9 +39,10 @@ public class AccService {
     private final TokenBlacklistService tokenBlacklistService;
     private final ReportRepository reportRepository;
     private final MailService mailService;
+    private final CompanyService companyService;
 
 
-    public AccService(AccRepository accRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager, TokenBlacklistService tokenBlacklistService, ReportRepository reportRepository, MailService mailService){
+    public AccService(AccRepository accRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager, TokenBlacklistService tokenBlacklistService, ReportRepository reportRepository, MailService mailService, CompanyService companyService){
         this.accRepository = accRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -47,6 +50,7 @@ public class AccService {
         this.tokenBlacklistService = tokenBlacklistService;
         this.reportRepository = reportRepository;
         this.mailService = mailService;
+        this.companyService = companyService;
     }
 
 //--------------------------------------------------------------------------------------------
@@ -150,13 +154,40 @@ public class AccService {
             return ResponseEntity.badRequest().body("Email đã được sử dụng!");
         }
 
+        if(!request.getPassword().equals(request.getConfirmPassword())){
+            return ResponseEntity.badRequest().body("Mật khẩu xác nhận không khớp?");
+        }
+
         Account account = new Account();
+        account.setName(request.getName());
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setEmail(request.getEmail());
         account.setRole(request.getRole());
 
-        accRepository.save(account);
+        Account saved = accRepository.save(account);
+
+        if("ROLE_MANAGER".equals(request.getRole())) {
+            CreateCompanyDto companyDto = request.getCompany();
+
+            if(companyDto == null){
+                return ResponseEntity.badRequest().body("Vai trờ ROLE_MANAGER yêu cầu phải có đầy đủ thông tin công ty.");
+            }
+
+            companyDto.setCreatedBy(account);
+
+            companyService.create(companyDto, account.getUsername());
+        }
+
+        if (saved.getEmail() != null && saved.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+            try {
+                mailService.sendWelcomeEmail(saved.getEmail(), saved.getName());
+                System.out.println("Đã gửi email chào mừng tới: " +saved.getEmail());
+            } catch (MessagingException e) {
+                System.err.println("Lỗi gửi email chào mừng " + e.getMessage());
+            }
+        };
+
         return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
     }
 

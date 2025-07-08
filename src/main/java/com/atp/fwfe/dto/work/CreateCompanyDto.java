@@ -1,5 +1,6 @@
 package com.atp.fwfe.dto.work;
 
+import com.atp.fwfe.model.account.Account;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -17,6 +18,8 @@ public class CreateCompanyDto {
 
     @NotBlank(message = "Nhập địa chỉ cơ sở kinh doanh")
     private String address;
+
+    private Account createdBy;
 
     private Boolean isPublic;
 
