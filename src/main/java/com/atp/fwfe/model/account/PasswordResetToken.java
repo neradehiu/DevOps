@@ -16,7 +16,7 @@ public class PasswordResetToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String token;
 
     @OneToOne
@@ -26,17 +26,16 @@ public class PasswordResetToken {
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 
-    public PasswordResetToken(){};
+    public PasswordResetToken() {}
 
-    public PasswordResetToken(String token, Account account, Duration expiryDuration){
+    public PasswordResetToken(String token, Account account, Duration expiryDuration) {
         this.token = token;
         this.account = account;
         this.expiryDate = LocalDateTime.now().plus(expiryDuration);
     }
 
-    public boolean isExpired(){
+    public boolean isExpired() {
         return expiryDate.isBefore(LocalDateTime.now());
     }
-
-
 }
+
