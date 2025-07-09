@@ -101,14 +101,19 @@ public class AccService {
 
             if(account.isLocked()){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new LoginResponse(null, "Tài khoản đã bị tạm khóa 1 tuần bởi admin do vi phạm tiêu chuẩn độ tin cậy với cộng đồng. \n Vui lòng chờ hoặc liên hệ quản trị viên qua zalo - 0768471834 -"));
+                        .body(new LoginResponse(null,
+                                "Tài khoản đã bị tạm khóa 1 tuần bởi admin do vi phạm tiêu chuẩn độ tin cậy với cộng đồng. \n Vui lòng chờ hoặc liên hệ quản trị viên qua zalo - 0768471834 -",
+                                null));
             }
 
             String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
-            return ResponseEntity.ok(new LoginResponse(token, "Đăng nhập thành công!"));
+            String role = account.getRole();
+
+            return ResponseEntity.ok(new LoginResponse(token, "Đăng nhập thành công!", role));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse(null, "Tên đăng nhập hoặc mật khẩu không đúng!"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new LoginResponse(null, "Tên đăng nhập hoặc mật khẩu không đúng!", null));
         }
     }
 
