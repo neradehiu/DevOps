@@ -29,7 +29,6 @@ public class MailService {
         sendHtml(email, subject, html);
     }
 
-
     public void sendWeeklyThanks(String email, String name) throws MessagingException{
         String subject = " Cảm ơn bạn đã luôn đồng hành cùng cộng đồng!";
         String html= """
@@ -42,7 +41,6 @@ public class MailService {
                 """.formatted(name);
         sendHtml(email, subject, html);
     }
-
 
     public void sendNewJobNotification(String email, List<WorkPosted> jobs) throws MessagingException{
         String subject = "🆕 Việc làm mới dành cho bạn!";
@@ -67,8 +65,6 @@ public class MailService {
 
         sendHtml(email, subject, html);
     }
-
-
 
     public void sendHtml(String to, String subject, String html) throws MessagingException{
         MimeMessage message = mailSender.createMimeMessage();
