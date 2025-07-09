@@ -22,11 +22,17 @@ public class CronJobService {
     private final AccService accService;
     private final MailService mailService;
 
-    @Scheduled(cron = "0 */2 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void notifyNewJobs() {
         log.info("Đang gửi email công việc mới...");
 
         List<WorkPosted> newJobs = workPostedService.findUnnotified();
+        if (newJobs.isEmpty()) {
+            log.info("✅ Không có công việc mới.");
+            return;
+        }
+
+
 
     }
 

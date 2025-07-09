@@ -73,10 +73,8 @@ public class WorkPostedService {
         postRepo.delete(post);
     }
 
-    public List<WorkPostedResponse> findUnnotified() {
-        return postRepo.findByIsNotifiedFalse().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public List<WorkPosted> findUnnotified() {
+        return postRepo.findByIsNotifiedFalse();
     }
 
     public void markAsNotified(List<Long> ids) {
