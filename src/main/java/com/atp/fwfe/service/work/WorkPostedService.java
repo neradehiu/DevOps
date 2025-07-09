@@ -21,9 +21,9 @@ public class WorkPostedService {
 
     public WorkPostedResponse create(CreateWorkPostedRequest dto, String username) {
         Account creator = accountRepo.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tài khoản"));
         Company comp = companyRepo.findById(dto.getCompanyId())
-                .orElseThrow(() -> new EntityNotFoundException("Company not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy công ty"));
         WorkPosted post = WorkPosted.builder()
                 .position(dto.getPosition())
                 .descriptionWork(dto.getDescriptionWork())
@@ -46,15 +46,15 @@ public class WorkPostedService {
 
     public WorkPostedResponse getOne(Long id) {
         WorkPosted post = postRepo.findByIdWithRelations(id)
-                .orElseThrow(() -> new EntityNotFoundException("WorkPosted not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bài đăng"));
         return mapToResponse(post);
     }
 
     public WorkPostedResponse update(Long id, CreateWorkPostedRequest dto, String username, String role) {
         WorkPosted post = postRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("WorkPosted not found"));
-        if ("ROLE_WORK".equals(role) && !post.getCreatedBy().getUsername().equals(username)) {
-            throw new SecurityException("Access denied");
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bài đăng"));
+        if ("ROLE_MANAGER".equals(role) && !post.getCreatedBy().getUsername().equals(username)) {
+            throw new SecurityException("Quyền truy cập bị từ chối!");
         }
         post.setPosition(dto.getPosition());
         post.setDescriptionWork(dto.getDescriptionWork());
@@ -66,11 +66,26 @@ public class WorkPostedService {
 
     public void delete(Long id, String username, String role) {
         WorkPosted post = postRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("WorkPosted not found"));
-        if ("ROLE_WORK".equals(role) && !post.getCreatedBy().getUsername().equals(username)) {
-            throw new SecurityException("Access denied");
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bài đăng"));
+        if ("ROLE_MANAGER".equals(role) && !post.getCreatedBy().getUsername().equals(username)) {
+            throw new SecurityException("Quyền truy cập bị từ chối!");
         }
         postRepo.delete(post);
+    }
+
+    public List<WorkPostedResponse> findUnnotified() {
+        return postRepo.findByIsNotifiedFalse().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public void markAsNotified(List<Long> ids) {
+        ids.forEach(id -> {
+            postRepo.findById(id).ifPresent(post -> {
+                post.setNotified(true);
+                postRepo.save(post);
+            });
+        });
     }
 
     private WorkPostedResponse mapToResponse(WorkPosted p) {

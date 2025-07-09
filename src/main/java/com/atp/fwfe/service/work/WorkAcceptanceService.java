@@ -23,16 +23,16 @@ public class WorkAcceptanceService {
     @Transactional
     public WorkAcceptanceResponse accept(CreateWorkAcceptanceRequest dto, String username) {
         Account user = accountRepo.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tài khoản?"));
         WorkPosted post = postRepo.findById(dto.getWorkPostedId())
-                .orElseThrow(() -> new EntityNotFoundException("WorkPosted not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bài đăng?"));
         if (post.getAcceptedCount() >= post.getMaxAccepted()) {
-            throw new IllegalStateException("Job is full");
+            throw new IllegalStateException("Công việc này đã đủ người!");
         }
         boolean exists = post.getAcceptances().stream()
                 .anyMatch(a -> a.getAccount().getId().equals(user.getId()));
         if (exists) {
-            throw new IllegalStateException("Already accepted");
+            throw new IllegalStateException("Đã nhận việc");
         }
         WorkAcceptance acc = WorkAcceptance.builder()
                 .workPosted(post)
@@ -46,6 +46,13 @@ public class WorkAcceptanceService {
 
     public List<WorkAcceptanceResponse> getByPost(Long postId) {
         return accRepo.findByWorkPostedId(postId).stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    public List<WorkAcceptanceResponse> getByUserAndStatus(Long accountId, WorkAcceptance.WorkStatus status) {
+        return accRepo.findByAccountIdAndStatus(accountId, status)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     private WorkAcceptanceResponse mapToResponse(WorkAcceptance a) {

@@ -6,5 +6,8 @@ import java.util.List;
 
 public interface WorkAcceptanceRepository extends JpaRepository<WorkAcceptance, Long> {
     List<WorkAcceptance> findByWorkPostedId(Long workPostedId);
+    List<WorkAcceptance> findByAccountId(Long accountId);
+    List<WorkAcceptance> findByAccountIdAndStatus(Long accountId, com.atp.fwfe.model.work.WorkAcceptance.WorkStatus status);
+
 
 }

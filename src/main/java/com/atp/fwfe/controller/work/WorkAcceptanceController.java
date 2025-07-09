@@ -2,6 +2,7 @@ package com.atp.fwfe.controller.work;
 
 import com.atp.fwfe.dto.work.CreateWorkAcceptanceRequest;
 import com.atp.fwfe.dto.work.WorkAcceptanceResponse;
+import com.atp.fwfe.model.work.WorkAcceptance;
 import com.atp.fwfe.service.work.WorkAcceptanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/works/{workId}/acceptances")
+@CrossOrigin(origins = {
+        "http://10.0.2.2:8000",
+        "http://127.0.0.1:8000"
+}, allowCredentials = "true")
 @RequiredArgsConstructor
 public class WorkAcceptanceController {
     private final WorkAcceptanceService acceptanceService;
@@ -29,8 +34,18 @@ public class WorkAcceptanceController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_WORK','ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     public ResponseEntity<List<WorkAcceptanceResponse>> getByPost(@PathVariable Long workId) {
         return ResponseEntity.ok(acceptanceService.getByPost(workId));
     }
+
+    @GetMapping("/account/{id}/status/{status}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or #id == principal.id")
+    public ResponseEntity<List<WorkAcceptanceResponse>> getByUserAndStatus(
+            @PathVariable Long id,
+            @PathVariable WorkAcceptance.WorkStatus status
+    ) {
+        return ResponseEntity.ok(acceptanceService.getByUserAndStatus(id, status));
+    }
+
 }

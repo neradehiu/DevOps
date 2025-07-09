@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
         public CompanyResponse create(CreateCompanyDto dto, String username) {
             Account creator = accountRepo.findByUsername(username)
-                    .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tài khoản?"));
             Company company = Company.builder()
                     .name(dto.getName())
                     .descriptionCompany(dto.getDescriptionCompany())
@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
         }
 
         public List<CompanyResponse> getAll(String username, String role) {
-            if ("ROLE_WORK".equals(role)) {
+            if ("ROLE_MANAGER".equals(role)) {
                 Account acc = accountRepo.findByUsername(username)
-                        .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+                        .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tài khoản?"));
                 return companyRepo.findByCreatedById(acc.getId()).stream()
                         .map(this::mapToResponse)
                         .collect(Collectors.toList());
@@ -47,18 +47,18 @@ import java.util.stream.Collectors;
 
         public CompanyResponse getOne(Long id, String username, String role) {
             Company company = companyRepo.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Company not found"));
-            if ("ROLE_WORK".equals(role) && !company.getCreatedBy().getUsername().equals(username)) {
-                throw new SecurityException("Access denied");
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy công ty?"));
+            if ("ROLE_MANAGER".equals(role) && !company.getCreatedBy().getUsername().equals(username)) {
+                throw new SecurityException("Truy cập bị từ chối!");
             }
             return mapToResponse(company);
         }
 
         public CompanyResponse update(Long id, CreateCompanyDto dto, String username, String role) {
             Company company = companyRepo.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Company not found"));
-            if ("ROLE_WORK".equals(role) && !company.getCreatedBy().getUsername().equals(username)) {
-                throw new SecurityException("Access denied");
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy công ty?"));
+            if ("ROLE_MANAGER".equals(role) && !company.getCreatedBy().getUsername().equals(username)) {
+                throw new SecurityException("Truy cập bị từ chối!");
             }
             company.setName(dto.getName());
             company.setDescriptionCompany(dto.getDescriptionCompany());
@@ -70,9 +70,9 @@ import java.util.stream.Collectors;
 
         public void delete(Long id, String username, String role) {
             Company company = companyRepo.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Company not found"));
-            if ("ROLE_WORK".equals(role) && !company.getCreatedBy().getUsername().equals(username)) {
-                throw new SecurityException("Access denied");
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy công ty?"));
+            if ("ROLE_MANAGER".equals(role) && !company.getCreatedBy().getUsername().equals(username)) {
+                throw new SecurityException("Truy cập bị từ chối!");
             }
             companyRepo.delete(company);
         }
@@ -81,6 +81,31 @@ import java.util.stream.Collectors;
             return companyRepo.searchAllFields(keyword).stream()
                     .map(this::mapToResponse)
                     .collect(Collectors.toList());
+        }
+
+        public List<CompanyResponse> findByOwner(String username) {
+            Account acc = accountRepo.findByUsername(username)
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy tài khoản?"));
+            return companyRepo.findByCreatedById(acc.getId())
+                    .stream().map(this::mapToResponse)
+                    .collect(Collectors.toList());
+        }
+
+        public CompanyResponse getSanitizedCompany(Long id) {
+            Company c = companyRepo.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy công ty?"));
+            return sanitizeCompany(c);
+        }
+
+        public CompanyResponse sanitizeCompany(Company c) {
+            CompanyResponse r = new CompanyResponse();
+            r.setId(c.getId());
+            r.setName(c.getName());
+            r.setDescriptionCompany(c.getDescriptionCompany());
+            r.setType(c.getType());
+            r.setAddress(c.getAddress());
+            r.setIsPublic(c.getIsPublic());
+            return r;
         }
 
         private CompanyResponse mapToResponse(Company c) {

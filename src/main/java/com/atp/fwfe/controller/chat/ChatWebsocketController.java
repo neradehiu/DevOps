@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.security.Principal;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +18,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@CrossOrigin(origins = {
+        "http://10.0.2.2:8000",
+        "http://127.0.0.1:8000"
+}, allowCredentials = "true")
 public class ChatWebsocketController {
 
     @Autowired
