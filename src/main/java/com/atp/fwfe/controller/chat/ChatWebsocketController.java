@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -30,6 +31,7 @@ public class ChatWebsocketController {
     @Autowired
     private ChatMessageService messageService;
 
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @MessageMapping("/chat.group")
     public void sendGroupMessage(@Valid ChatMessageRequest request, Principal principal){
         ChatMessage message = new ChatMessage();

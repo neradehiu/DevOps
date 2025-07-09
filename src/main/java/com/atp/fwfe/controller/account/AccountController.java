@@ -5,6 +5,7 @@ import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.service.account.AccService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class AccountController {
         this.accService = accService;
     }
 
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request){
         Account updated = accService.updateUser(id, request);

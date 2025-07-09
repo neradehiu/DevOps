@@ -6,6 +6,7 @@ import com.atp.fwfe.service.account.PasswordResetTokenService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class ForgotPasswordController {
     @Autowired
     private PasswordResetTokenService passwordResetTokenService;
 
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) throws MessagingException {
         return passwordResetTokenService.sendResetPasswordLink(request.getEmail());

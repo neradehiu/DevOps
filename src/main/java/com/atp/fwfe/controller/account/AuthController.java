@@ -6,6 +6,7 @@ import com.atp.fwfe.dto.account.register.RegisterRequest;
 import com.atp.fwfe.service.account.AccService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ public class AuthController {
         this.accService = accService;
     }
 
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @PostMapping("/user/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
        return accService.register(request);

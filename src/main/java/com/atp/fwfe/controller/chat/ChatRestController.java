@@ -5,6 +5,7 @@ import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.service.chat.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ChatRestController {
     @Autowired
     private ChatMessageService messageService;
 
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @GetMapping("/received")
     public List<ChatMessageResponse> getReceivedMessages(Principal principal) {
         return messageService.findReceivedMessages(principal.getName())
