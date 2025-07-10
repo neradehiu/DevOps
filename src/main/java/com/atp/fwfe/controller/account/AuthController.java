@@ -23,7 +23,6 @@ public class AuthController {
         this.accService = accService;
     }
 
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @PostMapping("/user/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
        return accService.register(request);
