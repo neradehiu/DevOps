@@ -26,13 +26,14 @@ public class AccountController {
         this.accService = accService;
     }
 
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request){
         Account updated = accService.updateUser(id, request);
         return ResponseEntity.ok(updated);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     @GetMapping("/search")
     public ResponseEntity<?> searchAccount(@RequestParam String keyword){
         List<Account> results = accService.searchByKeyword(keyword);

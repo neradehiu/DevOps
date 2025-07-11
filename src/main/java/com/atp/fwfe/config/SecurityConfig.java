@@ -36,10 +36,38 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/favicon.ico", "/static/**").permitAll()
+
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/admin/*").authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/account/**").hasAnyRole("ADMIN", "MANAGER", "USER")
+
+                        .requestMatchers("/api/chat/**").hasAnyRole("ADMIN", "MANAGER", "USER")
+
+
+                        .requestMatchers(HttpMethod.POST, "/api/companies").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/companies/my").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/companies/search").hasAnyRole("ADMIN", "MANAGER", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/companies/{id}/public").hasAnyRole("ADMIN", "MANAGER", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER")
+
+
+                        .requestMatchers(HttpMethod.POST, "/api/works/*/acceptances").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/works/*/acceptances/account/*/status/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/works/*/acceptances").hasAnyRole("ADMIN", "MANAGER", "USER")
+
+
+                        .requestMatchers(HttpMethod.POST, "/api/works-posted").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/works-posted").hasAnyRole("ADMIN", "MANAGER", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER")
+
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
