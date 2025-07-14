@@ -71,6 +71,10 @@ public class Account {
     @JsonIgnore
     private List<WorkPosted> workPosted;
 
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private PasswordResetToken passwordResetToken;
+
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<WorkAcceptance> acceptedWorks;

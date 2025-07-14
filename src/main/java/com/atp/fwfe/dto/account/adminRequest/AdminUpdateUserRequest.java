@@ -12,4 +12,5 @@ public class AdminUpdateUserRequest {
     private String role;
     private boolean locked;
     private String updatedBy;
+    private String name;
 }
