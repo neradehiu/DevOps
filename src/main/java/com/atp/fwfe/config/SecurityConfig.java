@@ -37,14 +37,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/chat/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/admin/*").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/account/**").hasAnyRole("ADMIN", "MANAGER", "USER")
-
-                        .requestMatchers("/api/chat/**").hasAnyRole("ADMIN", "MANAGER", "USER")
 
 
                         .requestMatchers(HttpMethod.POST, "/api/companies").hasAnyRole("ADMIN", "MANAGER")
@@ -89,7 +87,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://10.0.2.2:8000", "http://127.0.0.1:8000"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setExposedHeaders(List.of("Authorization"));
