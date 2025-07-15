@@ -17,7 +17,6 @@ import com.atp.fwfe.service.mailer.MailService;
 import com.atp.fwfe.service.work.CompanyService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,8 +40,7 @@ public class AccService {
     private final MailService mailService;
     private final CompanyService companyService;
 
-
-    public AccService(AccRepository accRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager, TokenBlacklistService tokenBlacklistService, ReportRepository reportRepository, MailService mailService, CompanyService companyService){
+    public AccService(AccRepository accRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager, TokenBlacklistService tokenBlacklistService, ReportRepository reportRepository, MailService mailService, CompanyService companyService) {
         this.accRepository = accRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -53,7 +51,7 @@ public class AccService {
         this.companyService = companyService;
     }
 
-//--------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------
 //AUTH chung chung bắt đầu
     public ResponseEntity<String> register(RegisterRequest request) {
         if (accRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -74,20 +72,18 @@ public class AccService {
 
         Account saved = accRepository.save(account);
 
-        if (saved.getEmail() != null && saved.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+        if (saved.getEmail() != null && saved.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
             try {
                 mailService.sendWelcomeEmail(saved.getEmail(), saved.getName());
-                System.out.println("Đã gửi email chào mừng tới: " +saved.getEmail());
             } catch (MessagingException e) {
-                System.err.println("Lỗi gửi email chào mừng " + e.getMessage());
+                System.err.println("Lỗi gửi email chào mừng: " + e.getMessage());
             }
-        };
+        }
 
         return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
     }
 
-
-    public ResponseEntity<LoginResponse> login(LoginRequest request){
+    public ResponseEntity<LoginResponse> login(LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -99,25 +95,30 @@ public class AccService {
             Account account = accRepository.findByUsername(request.getUsername())
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
 
-            if(account.isLocked()){
+            if (account.isLocked()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(new LoginResponse(
                                 null,
                                 "Tài khoản đã bị tạm khóa 1 tuần bởi admin do vi phạm tiêu chuẩn độ tin cậy với cộng đồng.\nVui lòng chờ hoặc liên hệ quản trị viên qua zalo - 0768471834 -",
                                 null,
-                                null
+                                account.getUsername(),
+                                account.getId()
                         ));
             }
 
             String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
-            String role = account.getRole();
-            String username = account.getUsername();
 
-            return ResponseEntity.ok(new LoginResponse(token, "Đăng nhập thành công!", role, username));
+            return ResponseEntity.ok(new LoginResponse(
+                    token,
+                    "Đăng nhập thành công!",
+                    account.getRole(),
+                    account.getUsername(),
+                    account.getId()
+            ));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponse(null, "Tên đăng nhập hoặc mật khẩu không đúng!", null, null));
+                    .body(new LoginResponse(null, "Tên đăng nhập hoặc mật khẩu không đúng!", null, null, null));
         }
     }
 
@@ -130,30 +131,23 @@ public class AccService {
         return ResponseEntity.ok("Bạn đã đăng xuất tài khoản!");
     }
 
-    public ResponseEntity<String> validateToken(String token){
+    public ResponseEntity<String> validateToken(String token) {
         token = token.replace("Bearer ", "");
         String username = jwtUtil.extractUsername(token);
         String role = jwtUtil.extractRole(token);
 
-        if (username == null || role == null){
+        if (username == null || role == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ!");
         }
+
         return ResponseEntity.ok("Token hợp lệ. Role: " + role);
     }
 
 
 
-
-
-
-
-
-
-
-
-//AUTH chung chung kết thúc
+    //AUTH chung chung kết thúc
 //----------------------------------------------------------------------------------------------------
-//ADMIN bắt đầu
+//ADMIN bắt đầu-------------------- ADMIN ---------------------------
     public ResponseEntity<String> createUser(AdminCreateUserRequest request) {
         if (accRepository.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Username đã tồn tại!");
@@ -163,7 +157,7 @@ public class AccService {
             return ResponseEntity.badRequest().body("Email đã được sử dụng!");
         }
 
-        if(!request.getPassword().equals(request.getConfirmPassword())){
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
             return ResponseEntity.badRequest().body("Mật khẩu xác nhận không khớp?");
         }
 
@@ -176,26 +170,22 @@ public class AccService {
 
         Account saved = accRepository.save(account);
 
-        if("ROLE_MANAGER".equals(request.getRole())) {
+        if ("ROLE_MANAGER".equals(request.getRole())) {
             CreateCompanyDto companyDto = request.getCompany();
-
-            if(companyDto == null){
-                return ResponseEntity.badRequest().body("Vai trờ ROLE_MANAGER yêu cầu phải có đầy đủ thông tin công ty.");
+            if (companyDto == null) {
+                return ResponseEntity.badRequest().body("Vai trò ROLE_MANAGER yêu cầu phải có đầy đủ thông tin công ty.");
             }
-
             companyDto.setCreatedBy(account);
-
             companyService.create(companyDto, account.getUsername());
         }
 
-        if (saved.getEmail() != null && saved.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+        if (saved.getEmail() != null && saved.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
             try {
                 mailService.sendWelcomeEmail(saved.getEmail(), saved.getName());
-                System.out.println("Đã gửi email chào mừng tới: " +saved.getEmail());
             } catch (MessagingException e) {
-                System.err.println("Lỗi gửi email chào mừng " + e.getMessage());
+                System.err.println("Lỗi gửi email chào mừng: " + e.getMessage());
             }
-        };
+        }
 
         return ResponseEntity.ok("Đã đăng ký thành công tài khoản cho: " + request.getUsername());
     }
@@ -207,7 +197,7 @@ public class AccService {
         }
 
         Account account = optional.get();
-        if(account.isLocked()) {
+        if (account.isLocked()) {
             return ResponseEntity.badRequest().body("Tài khoản đã bị khóa!");
         }
 
@@ -217,15 +207,14 @@ public class AccService {
         return ResponseEntity.ok("Đã khóa tài khoản thành công!");
     }
 
-    public ResponseEntity<?> unlockUser(Long id){
+    public ResponseEntity<?> unlockUser(Long id) {
         Optional<Account> optional = accRepository.findById(id);
-
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy tài khoản.");
         }
 
         Account account = optional.get();
-        if(!account.isLocked()){
+        if (!account.isLocked()) {
             return ResponseEntity.badRequest().body("Tài khoản đang mở!");
         }
 
@@ -235,16 +224,24 @@ public class AccService {
         return ResponseEntity.ok("Đã mở khóa tài khoản thành công!");
     }
 
-    public List<Report> findByResolvedFalse(){
-        return reportRepository.findByResolvedFalse();
-    }
-
-    public void delete(Long id) {accRepository.deleteById(id);}
-
     public Account updateAdmin(Long id, AdminUpdateUserRequest request) {
         Account account = findOne(id);
 
-        if(request.getRole() != null) account.setRole(request.getRole());
+        if (request.getName() != null) {
+            account.setName(request.getName());
+        }
+
+        if (request.getEmail() != null) {
+            Optional<Account> existingEmail = accRepository.findByEmail(request.getEmail());
+            if (existingEmail.isPresent() && !existingEmail.get().getId().equals(id)) {
+                throw new IllegalArgumentException("Email đã được sử dụng bởi tài khoản khác.");
+            }
+            account.setEmail(request.getEmail());
+        }
+
+        if (request.getRole() != null) {
+            account.setRole(request.getRole());
+        }
 
         account.setLocked(request.isLocked());
         account.setUpdatedBy(request.getUpdatedBy());
@@ -252,7 +249,16 @@ public class AccService {
         return accRepository.save(account);
     }
 
-//ADMIN kết thúc
+    public List<Report> findByResolvedFalse() {
+        return reportRepository.findByResolvedFalse();
+    }
+
+    public void delete(Long id) {
+        accRepository.deleteById(id);
+    }
+
+
+    //ADMIN kết thúc
 //------------------------------------------------------------------------------------------------------
 //Account(USER + MANAGER) bắt đầu
     public List<Account> findAll() {
@@ -264,63 +270,62 @@ public class AccService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng"));
     }
 
-    public Company convertDtoToCompany(CreateCompanyDto dto, Account creator){
+    public Account updateUser(Long id, UserUpdateRequest request) {
+        Account account = findOne(id);
+
+        if (request.getUsername() != null && !request.getUsername().equals(account.getUsername())) {
+            Optional<Account> existingUsername = accRepository.findByUsername(request.getUsername());
+            if (existingUsername.isPresent()) {
+                throw new IllegalArgumentException("Username đã tồn tại trong hệ thống.");
+            }
+            account.setUsername(request.getUsername());
+        }
+
+        if (request.getName() != null) account.setName(request.getName());
+
+        if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
+            Optional<Account> existingEmail = accRepository.findByEmail(request.getEmail());
+            if (existingEmail.isPresent()) {
+                throw new IllegalArgumentException("Email đã dùng để đăng ký tài khoản khác trong hệ thống. Vui lòng chọn Email khác!");
+            }
+            account.setEmail(request.getEmail());
+        }
+
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            if (!request.getPassword().equals(request.getConfirmPassword())) {
+                throw new IllegalArgumentException("Mật khẩu xác nhận không khớp!!");
+            }
+            account.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        if ("ROLE_MANAGER".equals(request.getRole()) && request.getCompany() != null) {
+            Company company = convertDtoToCompany(request.getCompany(), account);
+            account.setCompany(List.of(company));
+        }
+
+        account.setUpdatedBy(request.getUpdatedBy());
+        return accRepository.save(account);
+    }
+
+    public Company convertDtoToCompany(CreateCompanyDto dto, Account creator) {
         Company company = new Company();
         company.setName(dto.getName());
-        company.setDescriptionCompany((dto.getDescriptionCompany()));
+        company.setDescriptionCompany(dto.getDescriptionCompany());
         company.setAddress(dto.getAddress());
         company.setType(dto.getType());
         company.setCreatedBy(creator);
         return company;
     }
 
-    public Account updateUser(Long id, UserUpdateRequest request) {
-        Account account = findOne(id);
-
-        if(request.getUsername() != null && !request.getUsername().equals(account.getUsername())){
-            Optional<Account> existingUsername = accRepository.findByUsername(request.getUsername());
-            if(existingUsername.isPresent()){
-                throw new IllegalArgumentException("Username đã tồn tại trong hệ thống.");
-            }
-            account.setUsername(request.getUsername());
-        }
-
-        if(request.getName() != null) account.setName(request.getName());
-
-        if(request.getEmail() != null && !request.getEmail().equals(account.getEmail())){
-            Optional<Account> existingEmail = accRepository.findByEmail(request.getEmail());
-            if(existingEmail.isPresent()){
-                throw new IllegalArgumentException("Email đã dùng để đăng ký tài khoản khác trong hệ thống. Vui lòng chọn Email khác!");
-            }
-            account.setEmail(request.getEmail());
-        }
-
-        if(request.getPassword() != null && !request.getPassword().isEmpty()) {
-            if(!request.getPassword().equals(request.getConfirmPassword())) {
-                throw new IllegalArgumentException("Mật khẩu xác nhận không khớp!!");
-            }
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-
-        if("ROLE_MANAGER".equals(request.getRole()) && request.getCompany() != null) {
-            Company company = convertDtoToCompany(request.getCompany(), account);
-            account.setCompany(List.of(company));
-        }
-
-        account.setUpdatedBy(request.getUpdatedBy());
-
-        return accRepository.save(account);
-    }
-
     public Account findByUsername(String username) {
         return accRepository.findByUsername(username).orElse(null);
     }
 
-    public Account findByEmail(String email){
+    public Account findByEmail(String email) {
         return accRepository.findByEmail(email).orElse(null);
     }
 
-    public Account findByName(String name){
+    public Account findByName(String name) {
         return accRepository.findByName(name).orElse(null);
     }
 
@@ -328,9 +333,5 @@ public class AccService {
         return accRepository.searchByKeyword(keyword);
     }
 
-
-//Account(USER + MANAGER_ kết thúc
+    //Account(USER + MANAGER_ kết thúc
 }
-
-
-
