@@ -20,4 +20,9 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<Long> findOldMessageIdsToDelete(@Param("receiver") String receiver);
 
     void deleteByIdIn(List<Long> ids);
+
+    @Query("SELECT DISTINCT m.sender FROM ChatMessage m WHERE m.receiver = :receiver")
+    List<String> findDistinctSenderUsernamesTo(@Param("receiver") String receiver);
+
+
 }

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -17,5 +19,7 @@ public class ChatMessageRequest {
 
     @Pattern(regexp = "(?i)PRIVATE|GROUP", message = "Loại tin nhắn không hợp lệ!")
     private String type;
+
+    private LocalDateTime timestamp;
 
 }

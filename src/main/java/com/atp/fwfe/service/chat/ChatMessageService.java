@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class ChatMessageService {
@@ -24,7 +26,7 @@ public class ChatMessageService {
         return chatRepository.save(message);
     }
 
-    public void markAsRead(Long messageId, String readerUsername) {
+    public ChatMessage markAsRead(Long messageId, String readerUsername) {
         ChatMessage message = chatRepository.findById(messageId).orElseThrow(() -> new RuntimeException("Tin nhắn không tồn tại"));
         Account reader = accRepository.findByUsername(readerUsername).orElseThrow(()-> new RuntimeException("Người dùng không tồn tại"));
 
@@ -32,6 +34,12 @@ public class ChatMessageService {
             message.getReadBy().add(reader);
             chatRepository.save(message);
         }
+
+        System.out.println("Đã đọc bởi: " + message.getReadBy().stream()
+                .map(Account::getUsername)
+                .collect(Collectors.toList()));
+
+        return message;
     }
 
     public List<ChatMessage> findAll() {
@@ -40,6 +48,10 @@ public class ChatMessageService {
 
     public List<ChatMessage> findReceivedMessages(String username) {
         return chatRepository.findByReceiverOrderByTimestampDesc(username);
+    }
+
+    public List<String> getSendersTo(String myUsername) {
+        return chatRepository.findDistinctSenderUsernamesTo(myUsername);
     }
 
     @Scheduled(cron = "0 0 * * * *")

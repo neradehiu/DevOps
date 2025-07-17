@@ -40,7 +40,7 @@ public class ChatMessage {
         PRIVATE, GROUP
     }
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "chat_message_read_by",
             joinColumns = @JoinColumn(name = "message_id"),

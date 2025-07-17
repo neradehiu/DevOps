@@ -38,11 +38,10 @@ public class WorkPostedService {
     }
 
     public List<WorkPostedResponse> getAll(String role) {
-        List<WorkPosted> posts = "ROLE_USER".equals(role)
-                ? postRepo.findByIsNotifiedFalse()
-                : postRepo.findAllWithRelations();
+        List<WorkPosted> posts = postRepo.findAllWithRelations();
         return posts.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
+
 
     public WorkPostedResponse getOne(Long id) {
         WorkPosted post = postRepo.findByIdWithRelations(id)
