@@ -49,8 +49,19 @@ public class ChatRestController {
         return ResponseEntity.ok("Đã đánh dấu đã đọc!");
     }
 
+    @GetMapping("/chat/history/private")
+    public List<ChatMessageResponse> getPrivateChatHistory(
+            @RequestParam String user,
+            @RequestParam(defaultValue = "50") int limit,
+            Principal principal) {
+
+        String currentUser = principal.getName();
+        return  messageService.getPrivateChatHistory(currentUser, user, limit);
+    }
+
     @GetMapping("/chat/private/inbox")
-    public ResponseEntity<List<String>> getPrivateInbox(@RequestParam String myUsername) {
+    public ResponseEntity<List<String>> getPrivateInbox(@RequestParam("myUsername") String myUsername) {
+        System.out.println("📥 Lấy hộp thư cho: " + myUsername);
         List<String> senders = messageService.getSendersTo(myUsername);
         return ResponseEntity.ok(senders);
     }

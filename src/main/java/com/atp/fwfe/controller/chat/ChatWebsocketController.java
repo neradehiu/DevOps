@@ -70,12 +70,20 @@ public class ChatWebsocketController {
 
         ChatMessageResponse response = mapToResponse(updated, principal.getName());
 
-        // Gửi lại cho toàn bộ group chat
         messagingTemplate.convertAndSend("/topic/chat/group", response);
+
+        String sender   = updated.getSender();
+        String receiver = updated.getReceiver();
+        if (receiver != null) {
+            messagingTemplate.convertAndSendToUser(
+                    receiver, "/queue/messages", response);
+        }
+        messagingTemplate.convertAndSendToUser(
+                sender,   "/queue/messages", response);
     }
 
 
-    @MessageMapping("/chat.send") // dùng để test JWT principal hoạt động
+    @MessageMapping("/chat.send")
     public void testPrincipal(ChatMessageRequest request, Principal principal) {
         System.out.println("🔐 [TEST] Người dùng WebSocket: " + principal.getName());
     }
@@ -85,7 +93,6 @@ public class ChatWebsocketController {
                 .map(Account::getUsername)
                 .collect(Collectors.toList());
 
-        // ✅ Đừng ép null nếu rỗng – vì nếu vừa được đọc bởi 1 người, danh sách có size = 1
         return new ChatMessageResponse(
                 message.getId(),
                 message.getSender(),

@@ -1,12 +1,18 @@
 package com.atp.fwfe.service.chat;
 
+import com.atp.fwfe.dto.chat.ChatMessageResponse;
 import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.model.chat.ChatMessage;
 import com.atp.fwfe.repository.account.AccRepository;
 import com.atp.fwfe.repository.chat.ChatMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +55,19 @@ public class ChatMessageService {
     public List<ChatMessage> findReceivedMessages(String username) {
         return chatRepository.findByReceiverOrderByTimestampDesc(username);
     }
+
+    public List<ChatMessageResponse> getPrivateChatHistory(String user1, String user2, int limit) {
+        List<ChatMessage> messages = chatRepository
+                .findPrivateChatBetweenUsers(user1, user2, PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "timestamp")));
+
+        Collections.reverse(messages); // Trả về từ cũ đến mới
+
+        return messages.stream()
+                .map(msg -> ChatMessageResponse.fromEntity(msg, user1)) // Truyền username vào đây
+                .collect(Collectors.toList());
+    }
+
+
 
     public List<String> getSendersTo(String myUsername) {
         return chatRepository.findDistinctSenderUsernamesTo(myUsername);
