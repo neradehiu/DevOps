@@ -2,6 +2,9 @@ package com.atp.fwfe.controller.work;
 
 import com.atp.fwfe.dto.work.WorkPostedResponse;
 import com.atp.fwfe.service.work.WorkPostedService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @RestController
 @RequestMapping("/api/works-posted")
@@ -32,6 +37,16 @@ public class WorkPostedController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER')")
     public ResponseEntity<List<WorkPostedResponse>> getAll(
             @RequestHeader("X-Role") String role) {
+        List<WorkPostedResponse> response = postService.getAll(role);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            String json = mapper.writeValueAsString(response);
+            System.out.println("[DEBUG] JSON trả về: " + json);
+        } catch (JsonProcessingException e) {
+            System.err.println("Lỗi khi chuyển object thành JSON: " + e.getMessage());
+        }
         return ResponseEntity.ok(postService.getAll(role));
     }
 
