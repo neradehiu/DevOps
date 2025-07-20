@@ -50,6 +50,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null){
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+                    if (!userDetails.isAccountNonLocked()) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.getWriter().write("Tài khoản đã bị khóa!");
+                        return;
+                    }
+
                     if (jwtUtil.validateToken(token, userDetails)) {
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails,

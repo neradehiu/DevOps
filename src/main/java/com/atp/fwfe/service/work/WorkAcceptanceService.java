@@ -71,10 +71,10 @@ public class WorkAcceptanceService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Công việc không khớp");
         }
 
-        if (!acc.getAccount().getId().equals(user.getId())
-                && !user.getRole().equals("ROLE_ADMIN")
-                && !user.getRole().equals("ROLE_MANAGER")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật việc này");
+        boolean isAdmin = "ROLE_ADMIN".equals(user.getRole());
+        boolean isOwner = acc.getAccount().getId().equals(user.getId());
+        if (!isAdmin && !isOwner) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Chính chủ mới được cập nhật");
         }
 
         if (acc.getStatus() == WorkStatus.COMPLETED) {

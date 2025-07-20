@@ -1,6 +1,7 @@
 package com.atp.fwfe.controller.report;
 
 import com.atp.fwfe.dto.account.reportRequest.ReportRequest;
+import com.atp.fwfe.dto.account.reportRequest.ReportResponse;
 import com.atp.fwfe.model.report.Report;
 import com.atp.fwfe.service.report.ReportService;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -28,9 +30,14 @@ public class ReportController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/unresolved")
-    public List<Report> getUnresolvedReports(){
-        return reportService.findByResolvedFalse();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ReportResponse>> getUnresolvedReports() {
+        List<Report> reports = reportService.findByResolvedFalse();
+        List<ReportResponse> response = reports.stream()
+                .map(reportService::mapToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
+
 }

@@ -48,9 +48,6 @@ import java.util.stream.Collectors;
         public CompanyResponse getOne(Long id, String username, String role) {
             Company company = companyRepo.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy công ty?"));
-            if ("ROLE_MANAGER".equals(role) && !company.getCreatedBy().getUsername().equals(username)) {
-                throw new SecurityException("Truy cập bị từ chối!");
-            }
             return mapToResponse(company);
         }
 
