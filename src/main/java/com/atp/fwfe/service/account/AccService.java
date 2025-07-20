@@ -8,10 +8,9 @@ import com.atp.fwfe.dto.account.register.RegisterRequest;
 import com.atp.fwfe.dto.account.userRequest.UserUpdateRequest;
 import com.atp.fwfe.dto.work.CreateCompanyDto;
 import com.atp.fwfe.model.account.Account;
-import com.atp.fwfe.model.account.Report;
 import com.atp.fwfe.model.work.Company;
 import com.atp.fwfe.repository.account.AccRepository;
-import com.atp.fwfe.repository.account.ReportRepository;
+import com.atp.fwfe.repository.report.ReportRepository;
 import com.atp.fwfe.security.JwtUtil;
 import com.atp.fwfe.service.mailer.MailService;
 import com.atp.fwfe.service.work.CompanyService;
@@ -247,10 +246,6 @@ public class AccService {
         account.setUpdatedBy(request.getUpdatedBy());
 
         return accRepository.save(account);
-    }
-
-    public List<Report> findByResolvedFalse() {
-        return reportRepository.findByResolvedFalse();
     }
 
     public void delete(Long id) {

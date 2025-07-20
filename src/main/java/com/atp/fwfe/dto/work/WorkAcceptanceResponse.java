@@ -1,6 +1,6 @@
 package com.atp.fwfe.dto.work;
 
-import com.atp.fwfe.model.work.WorkAcceptance.WorkStatus;
+import com.atp.fwfe.model.work.WorkStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -19,5 +19,7 @@ public class WorkAcceptanceResponse {
     private LocalDateTime acceptedAt;
 
     private WorkStatus status;
+    private String companyName;
+
 }
 

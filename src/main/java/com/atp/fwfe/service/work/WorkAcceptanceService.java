@@ -3,13 +3,17 @@ import com.atp.fwfe.dto.work.*;
 import com.atp.fwfe.model.account.Account;
 import com.atp.fwfe.model.work.WorkPosted;
 import com.atp.fwfe.model.work.WorkAcceptance;
+import com.atp.fwfe.model.work.WorkStatus;
 import com.atp.fwfe.repository.account.AccRepository;
 import com.atp.fwfe.repository.work.WorkPostedRepository;
 import com.atp.fwfe.repository.work.WorkAcceptanceRepository;
 import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,12 +52,49 @@ public class WorkAcceptanceService {
         return accRepo.findByWorkPostedId(postId).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    public List<WorkAcceptanceResponse> getByUserAndStatus(Long accountId, WorkAcceptance.WorkStatus status) {
-        return accRepo.findByAccountIdAndStatus(accountId, status)
+    public List<WorkAcceptanceResponse> getByWorkPostedIdAndAccountIdAndStatus(Long workId, Long accountId, WorkStatus status) {
+        return accRepo.findByWorkPostedIdAndAccountIdAndStatus(workId, accountId, status)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void updateStatus(Long workId, Long acceptanceId, String username, WorkStatus newStatus) {
+        Account user = accountRepo.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài khoản"));
+
+        WorkAcceptance acc = accRepo.findById(acceptanceId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy việc đã nhận"));
+
+        if (!acc.getWorkPosted().getId().equals(workId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Công việc không khớp");
+        }
+
+        if (!acc.getAccount().getId().equals(user.getId())
+                && !user.getRole().equals("ROLE_ADMIN")
+                && !user.getRole().equals("ROLE_MANAGER")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật việc này");
+        }
+
+        if (acc.getStatus() == WorkStatus.COMPLETED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "COMPLETED");
+        }
+
+        if (acc.getStatus() == WorkStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CANCELLED");
+        }
+
+        acc.setStatus(newStatus);
+
+        if (newStatus == WorkStatus.CANCELLED) {
+            WorkPosted post = acc.getWorkPosted();
+            post.setAcceptedCount(post.getAcceptedCount() - 1);
+        }
+
+        accRepo.save(acc);
+    }
+
 
     private WorkAcceptanceResponse mapToResponse(WorkAcceptance a) {
         WorkAcceptanceResponse r = new WorkAcceptanceResponse();
@@ -64,6 +105,7 @@ public class WorkAcceptanceService {
         r.setPosition(a.getWorkPosted().getPosition());
         r.setAcceptedAt(a.getAcceptedAt());
         r.setStatus(a.getStatus());
+        r.setCompanyName(a.getWorkPosted().getCompany().getName());
         return r;
     }
 }

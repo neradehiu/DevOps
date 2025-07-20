@@ -34,20 +34,6 @@ public class WorkAcceptance     {
     @Enumerated(EnumType.STRING)
     private WorkStatus status;
 
-    @Getter
-    public enum WorkStatus {
-        PENDING("Đang chờ"),
-        COMPLETED("Đã hoàn thành"),
-        CANCELLED("Đã hủy");
-
-        private final String label;
-
-        WorkStatus(String label){
-            this.label = label;
-        }
-
-    }
-
     @PrePersist
     public void prePersist(){
         this.acceptedAt = LocalDateTime.now();

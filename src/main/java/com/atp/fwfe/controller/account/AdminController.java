@@ -3,7 +3,6 @@ package com.atp.fwfe.controller.account;
 import com.atp.fwfe.dto.account.adminRequest.AdminCreateUserRequest;
 import com.atp.fwfe.dto.account.adminRequest.AdminUpdateUserRequest;
 import com.atp.fwfe.model.account.Account;
-import com.atp.fwfe.model.account.Report;
 import com.atp.fwfe.service.account.AccService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +52,6 @@ public class AdminController {
   public ResponseEntity<?> updateAdmin(@PathVariable Long id, @RequestBody AdminUpdateUserRequest request){
     Account updated = accService.updateAdmin(id,request);
     return ResponseEntity.ok(updated);
-  }
-
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @GetMapping("/reports/unresolved")
-  public List<Report> getUnresolvedReports(){
-    return accService.findByResolvedFalse();
   }
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
