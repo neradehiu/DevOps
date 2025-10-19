@@ -1,7 +1,7 @@
 # =========================
 # Stage 1: Build with Gradle
 # =========================
-FROM gradle:8.10.2-jdk-21 AS builder
+FROM gradle:8.14.3-jdk21 AS builder
 
 WORKDIR /app
 COPY . .
