@@ -14,7 +14,8 @@ import java.util.List;
 @RequestMapping("/api/account")
 @CrossOrigin(origins = {
         "http://10.0.2.2:8000",
-        "http://127.0.0.1:8000"
+        "http://127.0.0.1:8000",
+        "http://178.128.208.73:8080s"
 }, allowCredentials = "true")
 public class AccountController {
 
