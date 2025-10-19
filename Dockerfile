@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 
 # Copy file jar vào container
-COPY target/*.jar app.jar
+COPY build/libs/*.jar app.jar
 
 # Expose port Spring Boot chạy
 EXPOSE 8080
