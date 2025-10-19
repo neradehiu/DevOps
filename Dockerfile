@@ -1,7 +1,7 @@
 # =========================
 # Stage 1: Build with Gradle
 # =========================
-FROM gradle:8.10.2-jdk-22 AS builder
+FROM gradle:8.10.2-jdk-21 AS builder
 
 WORKDIR /app
 COPY . .
@@ -12,7 +12,7 @@ RUN gradle clean build -x test --no-daemon
 # =========================
 # Stage 2: Run the app
 # =========================
-FROM eclipse-temurin:22-jdk
+FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
