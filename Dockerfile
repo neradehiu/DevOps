@@ -1,14 +1,12 @@
-# Sử dụng image JDK chính thức
-FROM eclipse-temurin:17-jdk-alpine
-
-# Tạo thư mục làm việc
+# Stage 1: Build JAR file
+FROM gradle:8.6-jdk17 AS builder
 WORKDIR /app
+COPY . .
+RUN gradle build -x test
 
-# Copy file jar vào container
-COPY build/libs/*.jar app.jar
-
-# Expose port Spring Boot chạy
+# Stage 2: Run the Spring Boot app
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
 EXPOSE 8080
-
-# Lệnh chạy ứng dụng
 ENTRYPOINT ["java", "-jar", "app.jar"]
