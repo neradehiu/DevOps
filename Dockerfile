@@ -2,15 +2,19 @@
 # Stage 1: Build JAR file
 # =============================
 FROM gradle:8.8-jdk21 AS builder
-# Cài thêm JDK 22 để Gradle có thể build với toolchain 22
-USER root
-RUN apt-get update && apt-get install -y wget unzip && \
-    wget https://download.oracle.com/java/22/latest/jdk-22_linux-x64_bin.deb && \
-    apt install -y ./jdk-22_linux-x64_bin.deb && \
-    rm jdk-22_linux-x64_bin.deb
 
-# Set JAVA_HOME cho Gradle nhận JDK 22
-ENV JAVA_HOME=/usr/lib/jvm/jdk-22
+# Cài thêm OpenJDK 22 (Temurin)
+USER root
+RUN apt-get update && \
+    apt-get install -y wget gnupg && \
+    wget -O- https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | tee /usr/share/keyrings/adoptium.gpg > /dev/null && \
+    echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb jammy main" | tee /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && \
+    apt-get install -y temurin-22-jdk && \
+    apt-get clean
+
+# Dùng JDK 22 làm mặc định
+ENV JAVA_HOME=/usr/lib/jvm/temurin-22-jdk
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
 WORKDIR /app
