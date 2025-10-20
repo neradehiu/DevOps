@@ -1,5 +1,5 @@
 # Stage 1: Build with Gradle
-FROM gradle:8.14.3-jdk21 AS builder
+FROM gradle:8.5-jdk21 AS builder
 WORKDIR /app
 
 # Copy chỉ những file cần thiết
