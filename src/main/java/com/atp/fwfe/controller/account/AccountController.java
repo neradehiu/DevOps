@@ -15,7 +15,7 @@ import java.util.List;
 @CrossOrigin(origins = {
         "http://10.0.2.2:8000",
         "http://127.0.0.1:8000",
-        "http://178.128.208.73:8080s"
+        "http://178.128.208.73:8080"
 }, allowCredentials = "true")
 public class AccountController {
 
