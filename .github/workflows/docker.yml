@@ -7,55 +7,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
 
     steps:
-      # 1️⃣ Lấy source code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Thiết lập QEMU (hỗ trợ build đa nền tảng, tránh lỗi 504)
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      # 3️⃣ Thiết lập builder (buildx) để tối ưu caching
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 4️⃣ Đăng nhập Docker Hub với retry 3 lần
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-        retry: 3
 
-      # 5️⃣ Build image và push lên Docker Hub
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          platforms: linux/amd64
           tags: hieuihhghkj/backend-fwfe:latest
-          provenance: false
-          sbom: false
-        retry: 3
-
-      # 6️⃣ (Tùy chọn) Nếu Docker Hub lỗi, fallback sang GitHub Container Registry (GHCR)
-      - name: Fallback push to GHCR if Docker Hub fails
-        if: failure()
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push to GHCR
-        if: failure()
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/backend-fwfe:latest
-          platforms: linux/amd64
