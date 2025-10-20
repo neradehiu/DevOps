@@ -35,17 +35,20 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/static/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/auth/**", "/api/chat/**", "/api/companies").permitAll()
-
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        // Admin endpoints
                         .requestMatchers(HttpMethod.GET, "/api/admin/*").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
+                        // Account endpoints
                         .requestMatchers("/api/account/**").hasAnyRole("ADMIN", "MANAGER", "USER")
 
+                        // Companies
                         .requestMatchers(HttpMethod.POST, "/api/companies").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/companies/my").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/companies/search").hasAnyRole("ADMIN", "MANAGER", "USER")
@@ -54,14 +57,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER")
 
+                        // Works / Acceptances
                         .requestMatchers(HttpMethod.POST, "/api/works/*/acceptances").hasRole("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/works/*/acceptances/{acceptanceId}/status").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/works/*/acceptances/account/*/status/*").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/works/*/acceptances").hasAnyRole("ADMIN", "MANAGER", "USER")
 
+                        // Reports
                         .requestMatchers(HttpMethod.POST, "/api/reports").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/reports/unresolved").hasRole("ADMIN")
 
+                        // Works posted
                         .requestMatchers(HttpMethod.POST, "/api/works-posted").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/works-posted").hasAnyRole("ADMIN", "MANAGER", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/works-posted/getAll").hasAnyRole("ADMIN", "MANAGER", "USER")
@@ -69,6 +75,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER")
 
+                        // Any other request
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -91,20 +98,23 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        // Cho phép Flutter Web từ IP hoặc localhost
         configuration.setAllowedOriginPatterns(List.of(
                 "http://178.128.208.73:*",
                 "https://178.128.208.73:*",
                 "http://localhost:*"
         ));
 
+        // Cho phép tất cả phương thức
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
-                "X-Username",
-                "X-Role"
-        ));
+
+        // Cho phép tất cả headers để tránh lỗi preflight
+        configuration.setAllowedHeaders(List.of("*"));
+
+        // Expose Authorization header
         configuration.setExposedHeaders(List.of("Authorization"));
+
+        // Cho phép credentials
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
