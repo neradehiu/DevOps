@@ -97,26 +97,20 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // Cho phép Flutter Web từ IP hoặc localhost
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://178.128.208.73:*",
-                "https://178.128.208.73:*",
-                "http://localhost:*"
+        configuration.setAllowedOrigins(List.of(
+                "http://178.128.208.73",
+                "http://178.128.208.73:80",
+                "https://178.128.208.73",
+                "http://localhost:4200",
+                "http://localhost:3000",
+                "http://localhost:8080"
         ));
 
-        // Cho phép tất cả phương thức
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // Cho phép tất cả headers để tránh lỗi preflight
         configuration.setAllowedHeaders(List.of("*"));
-
-        // Expose Authorization header
         configuration.setExposedHeaders(List.of("Authorization"));
-
-        // Cho phép credentials
         configuration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
