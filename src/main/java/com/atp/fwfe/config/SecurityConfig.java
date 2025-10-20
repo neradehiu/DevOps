@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
@@ -35,47 +37,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/static/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/auth/**", "/api/chat/**", "/api/companies").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Admin endpoints
-                        .requestMatchers(HttpMethod.GET, "/api/admin/*").authenticated()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // Account endpoints
-                        .requestMatchers("/api/account/**").hasAnyRole("ADMIN", "MANAGER", "USER")
-
-                        // Companies
-                        .requestMatchers(HttpMethod.POST, "/api/companies").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/companies/my").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/companies/search").hasAnyRole("ADMIN", "MANAGER", "USER")
-                        .requestMatchers(HttpMethod.GET, "/api/companies/{id}/public").hasAnyRole("ADMIN", "MANAGER", "USER")
-                        .requestMatchers(HttpMethod.GET, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasAnyRole("ADMIN", "MANAGER")
-
-                        // Works / Acceptances
-                        .requestMatchers(HttpMethod.POST, "/api/works/*/acceptances").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/works/*/acceptances/{acceptanceId}/status").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/works/*/acceptances/account/*/status/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/works/*/acceptances").hasAnyRole("ADMIN", "MANAGER", "USER")
-
-                        // Reports
-                        .requestMatchers(HttpMethod.POST, "/api/reports").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/reports/unresolved").hasRole("ADMIN")
-
-                        // Works posted
-                        .requestMatchers(HttpMethod.POST, "/api/works-posted").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/works-posted").hasAnyRole("ADMIN", "MANAGER", "USER")
-                        .requestMatchers(HttpMethod.GET, "/api/works-posted/getAll").hasAnyRole("ADMIN", "MANAGER", "USER")
-                        .requestMatchers(HttpMethod.GET, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/works-posted/**").hasAnyRole("ADMIN", "MANAGER")
-
-                        // Any other request
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -97,22 +62,47 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+
+        // Cho phép frontend Flutter Web gọi API
         configuration.setAllowedOrigins(List.of(
                 "http://178.128.208.73",
                 "http://178.128.208.73:80",
-                "https://178.128.208.73",
-                "http://localhost:4200",
+                "http://localhost:8080",
+                "http://localhost:5000",
                 "http://localhost:3000",
-                "http://localhost:8080"
+                "http://localhost"
         ));
-
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    // Bổ sung thêm cấu hình WebMVC (để đảm bảo áp dụng cả ở controller layer)
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                                "http://178.128.208.73",
+                                "http://178.128.208.73:80",
+                                "http://localhost:8080",
+                                "http://localhost:5000",
+                                "http://localhost:3000",
+                                "http://localhost"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .exposedHeaders("Authorization")
+                        .allowCredentials(true);
+            }
+        };
     }
 }
